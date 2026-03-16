@@ -1,0 +1,1131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Santi London — Skin, Wellness & Medical Aesthetics</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,200;0,9..144,300;0,9..144,400;1,9..144,200;1,9..144,300;1,9..144,400&family=Cabinet+Grotesk:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        bg:      '#f4f1ec',
+        surface: '#edeae3',
+        line:    '#dbd6cc',
+        muted:   '#9e9286',
+        body:    '#3d3530',
+        head:    '#1a1410',
+        accent:  '#b8965a',
+        'accent-lt': '#d4b87a',
+        dark:    '#111009',
+      },
+      fontFamily: {
+        serif: ['Fraunces', 'Georgia', 'serif'],
+        sans:  ['"Cabinet Grotesk"', 'system-ui', 'sans-serif'],
+      },
+    }
+  }
+}
+</script>
+
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { overflow-x: hidden; scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Cabinet Grotesk', sans-serif;
+    background: #f4f1ec;
+    color: #3d3530;
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* ─ CURSOR ─ */
+  #cur {
+    position: fixed; width: 8px; height: 8px;
+    background: #b8965a; border-radius: 50%;
+    pointer-events: none; z-index: 9999;
+    transform: translate(-50%,-50%);
+    transition: width .25s, height .25s, opacity .25s;
+    mix-blend-mode: multiply;
+  }
+  #cur-ring {
+    position: fixed; width: 32px; height: 32px;
+    border: 1px solid rgba(184,150,90,.45); border-radius: 50%;
+    pointer-events: none; z-index: 9998;
+    transform: translate(-50%,-50%);
+  }
+  .hoverable:hover ~ #cur, a:hover ~ #cur { width:18px; height:18px; }
+
+  /* ─ LOADER ─ */
+  #loader {
+    position: fixed; inset:0; background:#1a1410; z-index:10000;
+    display:flex; align-items:center; justify-content:center; flex-direction:column; gap:2rem;
+  }
+  #l-word {
+    font-family:'Fraunces',serif; font-size:3rem; font-weight:200;
+    color:#f4f1ec; letter-spacing:.1em; overflow:hidden;
+  }
+  #l-word span { display:block; transform:translateY(100%); }
+  #l-bar { width:0; height:1px; background:linear-gradient(90deg,transparent,#b8965a,transparent); }
+
+  /* ─ NAV ─ */
+  #nav {
+    position:fixed; top:0; left:0; right:0; z-index:1000;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:1.6rem 3.5rem;
+    transition: padding .4s ease, background .4s ease, border-color .4s ease;
+    border-bottom: 1px solid transparent;
+    background: rgba(244,241,236,.0);
+  }
+  #nav.stuck {
+    padding:1rem 3.5rem;
+    background: rgba(244,241,236,.94);
+    backdrop-filter: blur(20px);
+    border-bottom-color: #dbd6cc;
+  }
+  .n-logo {
+    font-family:'Fraunces',serif; font-size:1.18rem; font-weight:300;
+    letter-spacing:.14em; color:#1a1410; text-decoration:none;
+    transition: color .3s;
+  }
+  .n-link {
+    font-size:.64rem; letter-spacing:.22em; text-transform:uppercase;
+    color:#9e9286; text-decoration:none;
+    transition:color .3s; position:relative;
+  }
+  .n-link::after {
+    content:''; position:absolute; left:0; bottom:-2px; width:0; height:1px;
+    background:#b8965a; transition:width .35s ease;
+  }
+  .n-link:hover { color:#1a1410; }
+  .n-link:hover::after { width:100%; }
+
+  .n-cta {
+    font-size:.65rem; letter-spacing:.2em; text-transform:uppercase;
+    padding:.6rem 1.5rem; background:#b8965a; color:#1a1410; font-weight:500;
+    text-decoration:none; transition:background .3s, transform .2s;
+    display:inline-block;
+  }
+  .n-cta:hover { background:#d4b87a; transform:translateY(-1px); }
+
+  /* ─ HERO (text-forward, no full-bg image) ─ */
+  #hero {
+    min-height:100vh; display:grid;
+    grid-template-columns:1fr 480px;
+    padding-top:72px;
+    background:#f4f1ec;
+    position:relative; overflow:hidden;
+  }
+
+  /* large decorative number — more subtle */
+  #hero-num {
+    position:absolute; right:460px; bottom:-3rem;
+    font-family:'Fraunces',serif; font-size:26vw; font-weight:200; line-height:1;
+    color:rgba(184,150,90,.04); pointer-events:none; user-select:none;
+    white-space:nowrap;
+  }
+
+  #hero-left {
+    display:flex; flex-direction:column; justify-content:center;
+    padding:5rem 3.5rem 5rem 5rem;
+    position:relative; z-index:2;
+  }
+
+  .h-eyebrow {
+    display:inline-flex; align-items:center; gap:.7rem;
+    font-size:.62rem; letter-spacing:.32em; text-transform:uppercase;
+    color:#b8965a; margin-bottom:2.2rem;
+    opacity:0; transform:translateY(12px);
+  }
+  .h-eyebrow-dot { width:5px; height:5px; border-radius:50%; background:#b8965a; }
+
+  .h-h1 {
+    font-family:'Fraunces',serif; font-weight:200;
+    font-size:clamp(3rem,5.5vw,5.8rem);
+    line-height:1.02; letter-spacing:-.01em; color:#1a1410;
+    margin-bottom:2rem;
+  }
+  .h-h1 em { font-style:italic; color:#b8965a; }
+  .h-line { overflow:hidden; display:block; }
+  .h-line-inner { display:block; transform:translateY(102%); }
+
+  .h-body {
+    font-size:.92rem; line-height:1.85; color:#9e9286; font-weight:300;
+    max-width:400px; margin-bottom:3rem;
+    opacity:0;
+  }
+
+  .h-actions { display:flex; gap:1rem; align-items:center; opacity:0; }
+
+  /* pill tags */
+  .h-tags { display:flex; flex-wrap:wrap; gap:.5rem; margin-top:3.5rem; opacity:0; }
+  .h-tag {
+    font-size:.6rem; letter-spacing:.18em; text-transform:uppercase;
+    padding:.35rem .85rem; border:1px solid #dbd6cc; color:#9e9286;
+    transition:border-color .3s, color .3s;
+  }
+  .h-tag:hover { border-color:#b8965a; color:#b8965a; }
+
+  /* ─ HERO RIGHT: contained image column ─ */
+  #hero-right {
+    display:flex; flex-direction:column;
+    padding:1.5rem 1.5rem 1.5rem 0;
+    gap:.75rem; z-index:2;
+    opacity:0;
+  }
+  .hero-img-main {
+    flex:1; min-height:0; overflow:hidden;
+    position:relative; min-height:360px;
+  }
+  .hero-img-main img {
+    width:100%; height:100%; object-fit:cover;
+    object-position:center 15%;
+    display:block;
+    filter:brightness(.95) contrast(1.03) saturate(.88);
+    transition:transform .9s cubic-bezier(.25,.46,.45,.94);
+  }
+  .hero-img-main:hover img { transform:scale(1.03); }
+
+  .hero-img-credit {
+    position:absolute; bottom:0; left:0; right:0;
+    padding:.7rem 1rem;
+    background:linear-gradient(to top, rgba(26,20,16,.7) 0%, transparent 100%);
+    font-size:.58rem; letter-spacing:.12em; color:rgba(244,241,236,.55);
+    font-style:italic;
+  }
+
+  .hero-img-small {
+    display:grid; grid-template-columns:1fr 1fr; gap:.75rem;
+    height:140px; flex-shrink:0;
+  }
+  .hero-img-small-item {
+    overflow:hidden; position:relative;
+    background:#dbd6cc;
+  }
+  .hero-img-small-item img {
+    width:100%; height:100%; object-fit:cover; display:block;
+    filter:brightness(.93) saturate(.82) contrast(1.02);
+    transition:transform .7s cubic-bezier(.25,.46,.45,.94);
+  }
+  .hero-img-small-item:hover img { transform:scale(1.06); }
+  .hero-img-small-item span {
+    position:absolute; bottom:.6rem; left:.7rem;
+    font-size:.55rem; letter-spacing:.18em; text-transform:uppercase; color:rgba(244,241,236,.7);
+  }
+
+  /* ─ MARQUEE ─ */
+  .mq-wrap { overflow:hidden; border-top:1px solid #dbd6cc; border-bottom:1px solid #dbd6cc; }
+  .mq-inner {
+    display:inline-flex; gap:0; white-space:nowrap;
+    animation:mq 22s linear infinite;
+  }
+  @keyframes mq { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+  .mq-inner:hover { animation-play-state:paused; }
+  .mq-item {
+    display:inline-flex; align-items:center; gap:2rem;
+    padding:.9rem 2.5rem; border-right:1px solid #dbd6cc;
+    font-size:.62rem; letter-spacing:.26em; text-transform:uppercase; color:#9e9286;
+    white-space:nowrap;
+  }
+  .mq-item span { color:#b8965a; font-size:.7rem; }
+
+  /* ─ SECTION HEADER ─ */
+  .sec-label {
+    font-size:.6rem; letter-spacing:.34em; text-transform:uppercase; color:#b8965a;
+    display:flex; align-items:center; gap:.7rem; margin-bottom:.8rem;
+  }
+  .sec-label::before { content:''; width:22px; height:1px; background:#b8965a; }
+  .sec-h2 {
+    font-family:'Fraunces',serif; font-weight:200; line-height:1.1;
+    color:#1a1410; font-size:clamp(2.2rem,3.5vw,3.6rem);
+  }
+  .sec-h2 em { font-style:italic; color:#b8965a; }
+
+  /* ─ SERVICES BENTO GRID ─ */
+  .bento-grid {
+    display:grid;
+    grid-template-columns:repeat(12,1fr);
+    grid-template-rows:auto;
+    gap:.85rem;
+  }
+  .bento-card {
+    background:#fff; border:1px solid #e8e3dc;
+    padding:2rem; position:relative; overflow:hidden;
+    transition:border-color .35s, box-shadow .35s, transform .35s;
+    cursor:default;
+  }
+  .bento-card:hover {
+    border-color:#c8a86a;
+    box-shadow:0 6px 36px rgba(184,150,90,.09);
+    transform:translateY(-2px);
+  }
+  .bento-card .bc-num {
+    font-family:'Fraunces',serif; font-size:3.5rem; font-weight:200;
+    color:rgba(184,150,90,.1); line-height:1;
+    position:absolute; top:.6rem; right:1rem;
+    transition:color .4s;
+  }
+  .bento-card:hover .bc-num { color:rgba(184,150,90,.18); }
+  .bc-icon {
+    width:32px; height:32px; border-radius:50%; background:#f4f1ec;
+    display:flex; align-items:center; justify-content:center;
+    margin-bottom:1.2rem; font-size:1rem;
+    transition:background .3s, transform .3s;
+  }
+  .bento-card:hover .bc-icon { background:rgba(184,150,90,.12); transform:rotate(8deg); }
+  .bc-title {
+    font-family:'Fraunces',serif; font-weight:300; font-size:1.2rem;
+    color:#1a1410; margin-bottom:.5rem;
+  }
+  .bc-desc {
+    font-size:.78rem; color:#9e9286; line-height:1.7; font-weight:300;
+  }
+  .bc-link {
+    display:inline-flex; align-items:center; gap:.4rem;
+    font-size:.6rem; letter-spacing:.18em; text-transform:uppercase; color:#b8965a;
+    text-decoration:none; margin-top:1.2rem;
+    transition:gap .3s;
+  }
+  .bc-link:hover { gap:.7rem; }
+
+  /* image bento card */
+  .bento-img {
+    position:relative; overflow:hidden; border:none;
+  }
+  .bento-img img {
+    width:100%; height:100%; object-fit:cover; display:block;
+    filter:brightness(.95) saturate(.82) contrast(1.04);
+    transition:transform .85s cubic-bezier(.25,.46,.45,.94), filter .5s;
+  }
+  .bento-img:hover img {
+    transform:scale(1.06);
+    filter:brightness(.98) saturate(.9) contrast(1.03);
+  }
+  .bento-img-label {
+    position:absolute; bottom:0; left:0; right:0; padding:1.4rem 1.6rem;
+    background:linear-gradient(to top, rgba(26,20,16,.82) 0%, transparent 100%);
+  }
+  .bento-img-label h4 {
+    font-family:'Fraunces',serif; font-weight:300; font-size:1.05rem; color:#f4f1ec;
+  }
+  .bento-img-label .bi-tag {
+    font-size:.55rem; letter-spacing:.22em; text-transform:uppercase; color:rgba(244,241,236,.45);
+    margin-bottom:.3rem; display:block;
+  }
+
+  /* large feature bento */
+  .bento-feature {
+    background:linear-gradient(150deg,#1e1812 0%,#2a1e14 60%,#1a1410 100%);
+    border:none; padding:2.8rem 2.4rem;
+    display:flex; flex-direction:column; justify-content:space-between;
+    position:relative; overflow:hidden;
+    cursor:default;
+  }
+  .bento-feature::before {
+    content:''; position:absolute;
+    width:320px; height:320px; border-radius:50%;
+    background:radial-gradient(circle,rgba(184,150,90,.12) 0%,transparent 70%);
+    top:-100px; right:-100px; pointer-events:none;
+  }
+  .bento-feature::after {
+    content:''; position:absolute;
+    width:200px; height:200px; border-radius:50%;
+    background:radial-gradient(circle,rgba(184,150,90,.06) 0%,transparent 70%);
+    bottom:-60px; left:-60px; pointer-events:none;
+  }
+  .bf-eyebrow {
+    font-size:.56rem; letter-spacing:.32em; text-transform:uppercase; color:#b8965a;
+    margin-bottom:1.2rem; position:relative; z-index:1;
+  }
+  .bf-h3 {
+    font-family:'Fraunces',serif; font-weight:200; font-size:2rem; line-height:1.15;
+    color:#f4f1ec; margin-bottom:1rem; position:relative; z-index:1;
+  }
+  .bf-h3 em { font-style:italic; color:#b8965a; }
+  .bf-body { font-size:.77rem; color:rgba(244,241,236,.4); line-height:1.8; font-weight:300; max-width:320px; position:relative; z-index:1; }
+  .bf-cta { display:inline-flex; align-items:center; gap:.5rem; font-size:.6rem; letter-spacing:.18em; text-transform:uppercase; color:#b8965a; text-decoration:none; margin-top:1.4rem; transition:gap .3s; position:relative; z-index:1; }
+  .bf-cta:hover { gap:.8rem; }
+  .bf-stat {
+    display:flex; gap:2rem; margin-top:0;
+    padding-top:1.5rem; border-top:1px solid rgba(255,255,255,.06);
+    position:relative; z-index:1;
+  }
+  .bf-stat-item em {
+    font-family:'Fraunces',serif; font-style:normal; font-size:2rem; font-weight:200;
+    color:#b8965a; display:block; line-height:1;
+  }
+  .bf-stat-item span { font-size:.56rem; letter-spacing:.2em; text-transform:uppercase; color:rgba(244,241,236,.25); margin-top:.25rem; display:block; }
+
+  /* ─ PHILOSOPHY SPLIT ─ */
+  #philosophy {
+    display:grid; grid-template-columns:1fr 1fr;
+    background:#f4f1ec;
+  }
+  .phil-left {
+    padding:7rem 5rem 7rem 5rem;
+    border-right:1px solid #dbd6cc;
+    display:flex; flex-direction:column; justify-content:center;
+  }
+  .phil-right {
+    padding:7rem 5rem;
+    display:flex; flex-direction:column; justify-content:center;
+    gap:2.5rem;
+  }
+  .phil-img-stack {
+    position:relative; align-self:flex-start;
+    margin-top:3rem;
+  }
+  .pis-main {
+    width:320px; height:400px; overflow:hidden;
+    border:1px solid #dbd6cc;
+  }
+  .pis-main img {
+    width:100%; height:100%; object-fit:cover;
+    object-position:center top;
+    filter:saturate(.85) contrast(1.02);
+    transition:transform .7s cubic-bezier(.25,.46,.45,.94);
+  }
+  .pis-main:hover img { transform:scale(1.04); }
+  .pis-accent {
+    position:absolute; bottom:-1.5rem; right:-1.5rem;
+    width:140px; height:140px; overflow:hidden;
+    border:3px solid #f4f1ec;
+    box-shadow:0 8px 32px rgba(0,0,0,.12);
+  }
+  .pis-accent img { width:100%; height:100%; object-fit:cover; filter:saturate(.85); }
+  .pis-badge {
+    position:absolute; top:-1rem; left:-1rem;
+    width:80px; height:80px; border-radius:50%;
+    background:#b8965a; display:flex; flex-direction:column;
+    align-items:center; justify-content:center;
+    box-shadow:0 4px 16px rgba(184,150,90,.4);
+  }
+  .pis-badge strong {
+    font-family:'Fraunces',serif; font-size:1.5rem; font-weight:300; color:#f4f1ec; line-height:1;
+  }
+  .pis-badge small { font-size:.48rem; letter-spacing:.12em; text-transform:uppercase; color:rgba(244,241,236,.7); }
+
+  .pillar-item {
+    display:flex; gap:1.2rem; align-items:flex-start;
+    padding:1.4rem; border:1px solid #dbd6cc; background:#fff;
+    transition:border-color .3s, transform .3s;
+  }
+  .pillar-item:hover { border-color:#b8965a; transform:translateX(4px); }
+  .pillar-num {
+    font-family:'Fraunces',serif; font-size:1.8rem; font-weight:200;
+    color:#b8965a; line-height:1; flex-shrink:0; width:2.2rem;
+  }
+  .pillar-text h4 { font-size:.75rem; letter-spacing:.15em; text-transform:uppercase; color:#1a1410; margin-bottom:.3rem; }
+  .pillar-text p { font-size:.78rem; color:#9e9286; line-height:1.65; font-weight:300; }
+
+  /* ─ COMPANION / AI SECTION ─ */
+  #companion {
+    background:#1a1410; padding:7rem 5rem;
+    display:grid; grid-template-columns:1fr 1fr; gap:6rem; align-items:center;
+    position:relative; overflow:hidden;
+  }
+  #companion::before {
+    content:''; position:absolute; inset:0; pointer-events:none;
+    background:repeating-linear-gradient(
+      -45deg, transparent, transparent 60px,
+      rgba(184,150,90,.018) 60px, rgba(184,150,90,.018) 61px
+    );
+  }
+  .comp-h2 {
+    font-family:'Fraunces',serif; font-weight:200; font-size:clamp(2rem,3.5vw,3.4rem);
+    line-height:1.1; color:#f4f1ec; margin-bottom:1.2rem;
+  }
+  .comp-h2 em { font-style:italic; color:#b8965a; }
+  .comp-body { font-size:.88rem; line-height:1.85; color:rgba(244,241,236,.4); font-weight:300; margin-bottom:2rem; max-width:380px; }
+
+  .comp-list { list-style:none; display:flex; flex-direction:column; gap:.9rem; margin-bottom:2.5rem; }
+  .comp-list li {
+    display:flex; align-items:flex-start; gap:.9rem;
+    font-size:.82rem; color:rgba(244,241,236,.55); line-height:1.65; font-weight:300;
+  }
+  .comp-list li::before { content:'—'; color:#b8965a; flex-shrink:0; margin-top:.05rem; }
+
+  /* metrics widget */
+  .metrics-widget {
+    background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.07);
+    padding:2rem; border-radius:2px;
+    position:relative; z-index:1;
+  }
+  .mw-header {
+    display:flex; align-items:center; justify-content:space-between; margin-bottom:1.8rem;
+    padding-bottom:1.2rem; border-bottom:1px solid rgba(255,255,255,.06);
+  }
+  .mw-title { font-family:'Fraunces',serif; font-size:1.1rem; font-weight:300; color:#f4f1ec; font-style:italic; }
+  .mw-badge { font-size:.55rem; letter-spacing:.18em; text-transform:uppercase; color:#b8965a; padding:.3rem .7rem; border:1px solid rgba(184,150,90,.3); }
+  .mw-metric { margin-bottom:1.4rem; }
+  .mw-metric-head { display:flex; justify-content:space-between; margin-bottom:.6rem; }
+  .mw-metric-name { font-size:.65rem; letter-spacing:.18em; text-transform:uppercase; color:rgba(244,241,236,.35); }
+  .mw-metric-val { font-family:'Fraunces',serif; font-size:.95rem; color:#b8965a; }
+  .mw-bar { height:2px; background:rgba(255,255,255,.06); border-radius:1px; overflow:hidden; }
+  .mw-bar-fill { height:100%; background:linear-gradient(90deg,#b8965a,#d4b87a); width:0; border-radius:1px; transition:width 1.6s cubic-bezier(.25,.46,.45,.94); }
+  .mw-footer { display:flex; gap:.5rem; flex-wrap:wrap; margin-top:1.8rem; padding-top:1.2rem; border-top:1px solid rgba(255,255,255,.06); }
+  .mw-tag { font-size:.55rem; letter-spacing:.16em; text-transform:uppercase; border:1px solid rgba(184,150,90,.25); color:rgba(184,150,90,.6); padding:.3rem .6rem; }
+
+  /* ─ JOURNAL ─ */
+  #journal { padding:7rem 5rem; background:#edeae3; }
+  .journal-grid {
+    display:grid; grid-template-columns:repeat(3,1fr); gap:1.5rem; margin-top:3.5rem;
+  }
+  .jcard {
+    background:#fff; border:1px solid #dbd6cc; overflow:hidden; cursor:default;
+    transition:box-shadow .4s, border-color .4s;
+    display:flex; flex-direction:column;
+    text-decoration:none;
+  }
+  .jcard:hover { border-color:#b8965a; box-shadow:0 8px 40px rgba(0,0,0,.07); }
+  .jcard-img { height:220px; overflow:hidden; flex-shrink:0; }
+  .jcard-img img {
+    width:100%; height:100%; object-fit:cover; display:block;
+    filter:saturate(.82) brightness(.97);
+    transition:transform .7s cubic-bezier(.25,.46,.45,.94), filter .4s;
+  }
+  .jcard:hover .jcard-img img { transform:scale(1.05); filter:saturate(.92) brightness(1); }
+  .jcard-body { padding:1.6rem; flex:1; display:flex; flex-direction:column; }
+  .jcard-cat { font-size:.58rem; letter-spacing:.24em; text-transform:uppercase; color:#b8965a; margin-bottom:.7rem; }
+  .jcard-title { font-family:'Fraunces',serif; font-weight:300; font-size:1.15rem; line-height:1.35; color:#1a1410; margin-bottom:.8rem; flex:1; }
+  .jcard-desc { font-size:.77rem; color:#9e9286; line-height:1.65; font-weight:300; margin-bottom:1.2rem; }
+  .jcard-link { font-size:.62rem; letter-spacing:.18em; text-transform:uppercase; color:#b8965a; display:inline-flex; align-items:center; gap:.4rem; transition:gap .3s; }
+  .jcard:hover .jcard-link { gap:.7rem; }
+
+  /* ─ CTA BANNER ─ */
+  #cta-banner {
+    padding:6rem 5rem; background:#1a1410;
+    display:grid; grid-template-columns:1fr 1fr; gap:4rem; align-items:center;
+    position:relative; overflow:hidden;
+  }
+  #cta-banner::after {
+    content:'SANTI'; position:absolute; right:-2rem; top:50%; transform:translateY(-50%);
+    font-family:'Fraunces',serif; font-size:18rem; font-weight:200; line-height:1;
+    color:rgba(244,241,236,.025); pointer-events:none; user-select:none;
+  }
+  .cta-h2 { font-family:'Fraunces',serif; font-weight:200; font-size:clamp(2rem,4vw,4rem); line-height:1.05; color:#f4f1ec; }
+  .cta-h2 em { font-style:italic; color:#b8965a; }
+  .cta-body { font-size:.88rem; color:rgba(244,241,236,.4); line-height:1.8; font-weight:300; margin-bottom:2.2rem; max-width:360px; }
+  .cta-contacts { display:flex; flex-direction:column; gap:.8rem; margin-bottom:2.4rem; }
+  .cta-contact-item { font-size:.8rem; color:rgba(244,241,236,.5); display:flex; align-items:center; gap:.8rem; }
+  .cta-contact-item strong { color:#f4f1ec; font-weight:500; letter-spacing:.05em; }
+  .cta-contact-divider { width:24px; height:1px; background:rgba(184,150,90,.4); flex-shrink:0; }
+  .cta-hours { border:1px solid rgba(255,255,255,.07); padding:1.4rem; }
+  .cta-hours-row { display:flex; justify-content:space-between; padding:.4rem 0; border-bottom:1px solid rgba(255,255,255,.04); font-size:.78rem; }
+  .cta-hours-row:last-child { border-bottom:none; }
+  .cta-hours-row span:first-child { color:rgba(244,241,236,.35); font-size:.65rem; letter-spacing:.14em; text-transform:uppercase; }
+  .cta-hours-row span:last-child { color:#f4f1ec; font-weight:400; }
+
+  /* ─ FOOTER ─ */
+  footer { background:#111009; padding:5rem 5rem 2rem; }
+  .ft-top {
+    display:grid; grid-template-columns:1.6fr 1fr 1fr 1fr; gap:3rem;
+    padding-bottom:3rem; border-bottom:1px solid rgba(255,255,255,.06); margin-bottom:2rem;
+  }
+  .ft-brand { font-family:'Fraunces',serif; font-size:1.3rem; font-weight:200; color:#f4f1ec; letter-spacing:.1em; margin-bottom:1rem; }
+  .ft-tagline { font-size:.77rem; color:rgba(255,255,255,.2); line-height:1.8; font-weight:300; margin-bottom:1.5rem; }
+  .ft-col-label { font-size:.58rem; letter-spacing:.3em; text-transform:uppercase; color:#b8965a; margin-bottom:1.2rem; opacity:.7; }
+  .ft-link { display:block; font-size:.78rem; color:rgba(255,255,255,.22); text-decoration:none; line-height:2.2; transition:color .3s; }
+  .ft-link:hover { color:#b8965a; }
+  .ft-bottom { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; }
+  .ft-copy { font-size:.68rem; color:rgba(255,255,255,.15); letter-spacing:.08em; }
+  .ft-legal a { font-size:.68rem; color:rgba(255,255,255,.15); text-decoration:none; margin-left:1.5rem; transition:color .3s; }
+  .ft-legal a:hover { color:#b8965a; }
+
+  /* ─ PROPOSAL BADGE ─ */
+  #badge {
+    position:fixed; bottom:1.5rem; right:1.5rem; z-index:5000;
+    background:#b8965a; color:#1a1410; padding:.55rem 1.1rem;
+    font-size:.58rem; letter-spacing:.2em; text-transform:uppercase; font-weight:700;
+    box-shadow:0 4px 20px rgba(184,150,90,.45);
+    animation: bpulse 3s ease-in-out infinite;
+  }
+  @keyframes bpulse {
+    0%,100%{box-shadow:0 4px 20px rgba(184,150,90,.45)}
+    50%{box-shadow:0 4px 36px rgba(184,150,90,.8)}
+  }
+
+  /* ─ GRAIN ─ */
+  body::after {
+    content:''; position:fixed; inset:0; z-index:9000; pointer-events:none;
+    opacity:.03;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  }
+
+  /* ─ REVEAL utility ─ */
+  .reveal { opacity:0; transform:translateY(36px); }
+
+  @media (max-width:1100px) {
+    #hero { grid-template-columns:1fr; min-height:auto; }
+    #hero-right { display:grid; grid-template-columns:1fr 1fr; height:380px; padding:0 1.5rem 1.5rem; }
+    .hero-img-main { flex:none; height:100%; min-height:0; }
+    .hero-img-small { height:100%; }
+    #hero-left { padding:5rem 2.5rem 2.5rem; }
+    #philosophy { grid-template-columns:1fr; }
+    .phil-left { border-right:none; border-bottom:1px solid #dbd6cc; padding:5rem 2.5rem; }
+    .phil-right { padding:3rem 2.5rem 5rem; }
+    #companion { grid-template-columns:1fr; gap:3rem; padding:5rem 2.5rem; }
+    .journal-grid { grid-template-columns:1fr 1fr; }
+    #cta-banner { grid-template-columns:1fr; padding:4rem 2.5rem; }
+    .ft-top { grid-template-columns:1fr 1fr; }
+    #nav { padding:1.2rem 2rem; }
+    #services { padding-left:1.5rem; padding-right:1.5rem; }
+    .bento-grid { grid-template-columns:repeat(6,1fr); }
+  }
+  @media (max-width:700px) {
+    .journal-grid { grid-template-columns:1fr; }
+    .n-links { display:none; }
+    #hero-num { display:none; }
+    .ft-top { grid-template-columns:1fr; }
+    .bento-grid { grid-template-columns:1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- CURSOR -->
+<div id="cur"></div>
+<div id="cur-ring"></div>
+
+<!-- LOADER -->
+<div id="loader">
+  <div id="l-word"><span>Santi London</span></div>
+  <div id="l-bar"></div>
+</div>
+
+<!-- NAV -->
+<nav id="nav">
+  <a href="#" class="n-logo">Santi London</a>
+  <div class="n-links flex gap-9 items-center">
+    <a href="#" class="n-link">About</a>
+    <a href="#" class="n-link">Wellness</a>
+    <a href="#" class="n-link">Aesthetics</a>
+    <a href="#" class="n-link">Journal</a>
+    <a href="#" class="n-link">Gifts</a>
+  </div>
+  <a href="#" class="n-cta">Book Now</a>
+</nav>
+
+<!-- ═══════════════ HERO ═══════════════ -->
+<section id="hero">
+  <div id="hero-num">09</div>
+
+  <div id="hero-left">
+    <div class="h-eyebrow">
+      <div class="h-eyebrow-dot"></div>
+      Since 2009 · South Kensington
+    </div>
+
+    <h1 class="h-h1">
+      <span class="h-line"><span class="h-line-inner">Essential</span></span>
+      <span class="h-line"><span class="h-line-inner"><em>Optimisation</em></span></span>
+      <span class="h-line"><span class="h-line-inner">For Your Skin</span></span>
+    </h1>
+
+    <p class="h-body">
+      Clinical skin, wellness &amp; medical aesthetics — focused on long-term performance and results that actually last.
+    </p>
+
+    <div class="h-actions">
+      <a href="#" class="n-cta" style="font-size:.68rem;">Book Appointment</a>
+      <a href="#services" style="font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;color:#9e9286;text-decoration:none;border-bottom:1px solid #dbd6cc;padding-bottom:2px;transition:color .3s,border-color .3s;" onmouseover="this.style.color='#b8965a';this.style.borderColor='#b8965a'" onmouseout="this.style.color='#9e9286';this.style.borderColor='#dbd6cc'">Explore Treatments</a>
+    </div>
+
+    <div class="h-tags">
+      <span class="h-tag">Facials</span>
+      <span class="h-tag">Laser & IPL</span>
+      <span class="h-tag">Botox</span>
+      <span class="h-tag">Skin Peels</span>
+      <span class="h-tag">Wellness</span>
+      <span class="h-tag">Skin Lab AI</span>
+    </div>
+  </div>
+
+  <div id="hero-right">
+    <div class="hero-img-main">
+      <img src="https://santilondon.com/wp-content/uploads/2024/06/yasmine.webp" alt="Yasmine Naghdi at Santi London">
+      <div class="hero-img-credit">Yasmine Naghdi · The Royal Ballet</div>
+    </div>
+    <div class="hero-img-small">
+      <div class="hero-img-small-item">
+        <img src="https://santilondon.com/wp-content/uploads/2023/05/yoanna-hanbury.PNG-jpg.webp" alt="Facials">
+        <span>Facials</span>
+      </div>
+      <div class="hero-img-small-item">
+        <img src="https://santilondon.com/wp-content/uploads/2023/05/IPL-Treatments-in-South-Kensington-jpg.webp" alt="Laser">
+        <span>Laser</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ MARQUEE ═══════════════ -->
+<div class="mq-wrap py-0 bg-bg">
+  <div class="mq-inner">
+    <span class="mq-item"><span>◆</span> Consultant-Led Care</span>
+    <span class="mq-item"><span>◆</span> AI Skin Analysis</span>
+    <span class="mq-item"><span>◆</span> Evidence-Based</span>
+    <span class="mq-item"><span>◆</span> 15+ Years London</span>
+    <span class="mq-item"><span>◆</span> GDPR-First</span>
+    <span class="mq-item"><span>◆</span> Medical Aesthetics</span>
+    <span class="mq-item"><span>◆</span> Bespoke Wellness</span>
+    <span class="mq-item"><span>◆</span> Consultant-Led Care</span>
+    <span class="mq-item"><span>◆</span> AI Skin Analysis</span>
+    <span class="mq-item"><span>◆</span> Evidence-Based</span>
+    <span class="mq-item"><span>◆</span> 15+ Years London</span>
+    <span class="mq-item"><span>◆</span> GDPR-First</span>
+    <span class="mq-item"><span>◆</span> Medical Aesthetics</span>
+    <span class="mq-item"><span>◆</span> Bespoke Wellness</span>
+  </div>
+</div>
+
+<!-- ═══════════════ SERVICES BENTO ═══════════════ -->
+<section id="services" class="px-16 py-24 bg-bg">
+  <div class="flex items-end justify-between mb-12 flex-wrap gap-8">
+    <div class="reveal">
+      <div class="sec-label">What We Do</div>
+      <h2 class="sec-h2">Every Treatment<br>Crafted for <em>You</em></h2>
+    </div>
+    <p class="text-muted text-sm leading-relaxed max-w-xs reveal" style="font-weight:300">
+      From glow facials to precision laser and consultant-led medical aesthetics — each service is built around your skin, not a menu.
+    </p>
+  </div>
+
+  <div class="bento-grid">
+
+    <!-- Feature dark card -->
+    <div class="bento-feature reveal" style="grid-column:span 4; grid-row:span 2; min-height:460px;">
+      <div>
+        <div class="bf-eyebrow">Signature</div>
+        <h3 class="bf-h3">Bespoke<br><em>Facials</em></h3>
+        <p class="bf-body">Radiance, hydration, deep sculpting — every session tailored to exactly what your skin needs that day. Built around the TheraGlow method.</p>
+        <a href="#" class="bf-cta">Explore Facials →</a>
+      </div>
+      <div class="bf-stat">
+        <div class="bf-stat-item"><em>15+</em><span>Years</span></div>
+        <div class="bf-stat-item"><em>12+</em><span>Treatments</span></div>
+        <div class="bf-stat-item"><em>5k+</em><span>Clients</span></div>
+      </div>
+    </div>
+
+    <!-- Image card - Skin Peels -->
+    <div class="bento-img reveal" style="grid-column:span 5; height:220px;">
+      <img src="https://santilondon.com/wp-content/uploads/2025/03/IMG_5200.jpg" alt="Skin Peels">
+      <div class="bento-img-label">
+        <span class="bi-tag">Advanced</span>
+        <h4>Skin Peels</h4>
+      </div>
+    </div>
+
+    <!-- Text card - Laser -->
+    <div class="bento-card reveal" style="grid-column:span 3; height:220px;">
+      <div class="bc-num">03</div>
+      <div class="bc-icon">◈</div>
+      <div class="bc-title">Laser & IPL</div>
+      <div class="bc-desc">Precision targeting of redness, pigment and texture. CO₂ resurfacing to thread vein removal.</div>
+      <a href="#" class="bc-link">Laser Clinic →</a>
+    </div>
+
+    <!-- Text card - Aesthetics -->
+    <div class="bento-card reveal" style="grid-column:span 4; height:232px;">
+      <div class="bc-num">04</div>
+      <div class="bc-icon">✦</div>
+      <div class="bc-title">Medical Aesthetics</div>
+      <div class="bc-desc">Botox, fillers, skin boosters — consultant-led for subtle, natural results.</div>
+      <a href="#" class="bc-link">Aesthetics →</a>
+    </div>
+
+    <!-- Image card - Masseter/Botox (clean clinical image) -->
+    <div class="bento-img reveal" style="grid-column:span 4; height:232px;">
+      <img src="https://santilondon.com/wp-content/uploads/2023/04/Masseter-Botox-jpg.webp" alt="Medical Aesthetics">
+      <div class="bento-img-label">
+        <span class="bi-tag">Wellbeing</span>
+        <h4>Wellness & Massage</h4>
+      </div>
+    </div>
+
+    <!-- Text card - Hair -->
+    <div class="bento-card reveal" style="grid-column:span 3; height:232px; background:#faf9f6;">
+      <div class="bc-num">06</div>
+      <div class="bc-icon">◇</div>
+      <div class="bc-title">Hair Clinic</div>
+      <div class="bc-desc">Clinic-grade PRP for hair loss and scalp health. Science-backed, consultant-led.</div>
+      <a href="#" class="bc-link">Hair Clinic →</a>
+    </div>
+
+    <!-- Dark card - Skin Lab -->
+    <div class="bento-card reveal" style="grid-column:span 5; height:220px; background:#1a1410; border-color:#1a1410;">
+      <div class="bc-num" style="color:rgba(184,150,90,.18)">07</div>
+      <div class="bc-icon" style="background:rgba(184,150,90,.1);">◉</div>
+      <div class="bc-title" style="color:#f4f1ec;">Skin Lab Analysis</div>
+      <div class="bc-desc" style="color:rgba(244,241,236,.35);">AI-assisted diagnostic imaging to map your skin precisely and build a smarter long-term plan.</div>
+      <a href="#" class="bc-link">Skin Lab →</a>
+    </div>
+
+    <!-- Image card - IPL -->
+    <div class="bento-img reveal" style="grid-column:span 3; height:220px;">
+      <img src="https://santilondon.com/wp-content/uploads/2023/05/IPL-Treatments-in-South-Kensington-jpg.webp" alt="Facials">
+      <div class="bento-img-label">
+        <span class="bi-tag">Precision</span>
+        <h4>Laser & IPL</h4>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════════ PHILOSOPHY ═══════════════ -->
+<section id="philosophy">
+  <div class="phil-left">
+    <div class="sec-label reveal">Our Approach</div>
+    <h2 class="sec-h2 mb-6 reveal">Clinical Precision.<br><em>Human</em> Touch.</h2>
+    <p class="text-muted text-sm leading-relaxed mb-10 reveal" style="font-weight:300;max-width:400px">
+      Great skin is built — not borrowed. Every treatment plan at Santi is consultant-led, evidence-based, and designed to evolve with your skin over the long term. We combine the precision of a medical clinic with the warmth of a private spa.
+    </p>
+
+    <div class="phil-img-stack reveal">
+      <div class="pis-main">
+        <img src="https://santilondon.com/wp-content/uploads/2023/05/yoanna-hanbury.PNG-jpg.webp" alt="Santi London treatment">
+      </div>
+      <div class="pis-accent">
+        <img src="https://santilondon.com/wp-content/uploads/2023/10/Santi-Beauty-Lounge.webp" alt="Beauty lounge">
+      </div>
+      <div class="pis-badge">
+        <strong>15</strong>
+        <small>Yrs</small>
+      </div>
+    </div>
+  </div>
+
+  <div class="phil-right">
+    <div class="pillar-item reveal">
+      <div class="pillar-num">01</div>
+      <div class="pillar-text">
+        <h4>Consultation First</h4>
+        <p>Every journey begins with a thorough skin assessment — AI-assisted and consultant-reviewed.</p>
+      </div>
+    </div>
+    <div class="pillar-item reveal">
+      <div class="pillar-num">02</div>
+      <div class="pillar-text">
+        <h4>Precision Treatment</h4>
+        <p>Protocols tuned to your exact skin profile, lifestyle, and long-term goals.</p>
+      </div>
+    </div>
+    <div class="pillar-item reveal">
+      <div class="pillar-num">03</div>
+      <div class="pillar-text">
+        <h4>Monitored Progress</h4>
+        <p>Ongoing Skin Lab imaging tracks real change — not guesswork.</p>
+      </div>
+    </div>
+    <div class="pillar-item reveal">
+      <div class="pillar-num">04</div>
+      <div class="pillar-text">
+        <h4>Measurable Results</h4>
+        <p>Visible, lasting improvement you can see, feel, and compare over time.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ AI COMPANION ═══════════════ -->
+<section id="companion">
+  <div style="position:relative;z-index:1">
+    <div class="sec-label reveal" style="color:#b8965a">Intelligent Skincare</div>
+    <h2 class="comp-h2 reveal">Santi <em>Skin</em><br>Companion</h2>
+    <p class="comp-body reveal">
+      Your private, intelligent skin advisor — built by Santi to analyse, guide and evolve with you across every stage of your skincare journey.
+    </p>
+    <ul class="comp-list reveal">
+      <li>Track skin changes with structured check-ins and photo logs</li>
+      <li>AI-assisted insights aligned with our Skin Lab findings</li>
+      <li>Personalised routines that update as your skin evolves</li>
+      <li>Privacy-first — your data stays yours, always</li>
+    </ul>
+    <a href="#" class="n-cta reveal">Explore Skin Companion</a>
+  </div>
+
+  <div style="position:relative;z-index:1" class="reveal">
+    <div class="metrics-widget">
+      <div class="mw-header">
+        <div class="mw-title">Your Skin Report</div>
+        <div class="mw-badge">AI Active</div>
+      </div>
+
+      <div class="mw-metric">
+        <div class="mw-metric-head"><span class="mw-metric-name">Hydration</span><span class="mw-metric-val">78%</span></div>
+        <div class="mw-bar"><div class="mw-bar-fill" data-w="78"></div></div>
+      </div>
+      <div class="mw-metric">
+        <div class="mw-metric-head"><span class="mw-metric-name">Radiance</span><span class="mw-metric-val">65%</span></div>
+        <div class="mw-bar"><div class="mw-bar-fill" data-w="65"></div></div>
+      </div>
+      <div class="mw-metric">
+        <div class="mw-metric-head"><span class="mw-metric-name">Texture</span><span class="mw-metric-val">82%</span></div>
+        <div class="mw-bar"><div class="mw-bar-fill" data-w="82"></div></div>
+      </div>
+      <div class="mw-metric">
+        <div class="mw-metric-head"><span class="mw-metric-name">Elasticity</span><span class="mw-metric-val">71%</span></div>
+        <div class="mw-bar"><div class="mw-bar-fill" data-w="71"></div></div>
+      </div>
+
+      <div class="mw-footer">
+        <span class="mw-tag">Consultant-Aligned</span>
+        <span class="mw-tag">GDPR-First</span>
+        <span class="mw-tag">Built in London</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ JOURNAL ═══════════════ -->
+<section id="journal">
+  <div class="flex items-end justify-between flex-wrap gap-6 mb-0 reveal">
+    <div>
+      <div class="sec-label">Knowledge</div>
+      <h2 class="sec-h2">From the <em>Journal</em></h2>
+    </div>
+    <a href="#" style="font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;color:#9e9286;text-decoration:none;border-bottom:1px solid #dbd6cc;padding-bottom:2px;">View All →</a>
+  </div>
+
+  <div class="journal-grid">
+    <a class="jcard reveal" href="#">
+      <div class="jcard-img">
+        <img src="https://santilondon.com/wp-content/uploads/2023/05/IPL-Treatments-in-South-Kensington-jpg.webp" alt="PRP">
+      </div>
+      <div class="jcard-body">
+        <div class="jcard-cat">Hair · 5 min read</div>
+        <div class="jcard-title">The science behind PRP therapy for hair loss</div>
+        <div class="jcard-desc">How platelet-rich plasma supports follicles and what results to expect over multiple sessions.</div>
+        <span class="jcard-link">Read Article →</span>
+      </div>
+    </a>
+
+    <a class="jcard reveal" href="#">
+      <div class="jcard-img">
+        <img src="https://santilondon.com/wp-content/uploads/2023/04/Masseter-Botox-jpg.webp" alt="Botox">
+      </div>
+      <div class="jcard-body">
+        <div class="jcard-cat">Medical Aesthetics · 4 min read</div>
+        <div class="jcard-title">Post-Botox care: what to expect</div>
+        <div class="jcard-desc">Simple steps to support smooth, natural results after treatment.</div>
+        <span class="jcard-link">Read Article →</span>
+      </div>
+    </a>
+
+    <a class="jcard reveal" href="#">
+      <div class="jcard-img">
+        <img src="https://santilondon.com/wp-content/uploads/2023/10/Santi-Beauty-Lounge.webp" alt="IPL">
+      </div>
+      <div class="jcard-body">
+        <div class="jcard-cat">Laser & IPL · 6 min read</div>
+        <div class="jcard-title">IPL for redness and sun damage</div>
+        <div class="jcard-desc">When IPL is the right choice — and how many sessions you may need.</div>
+        <span class="jcard-link">Read Article →</span>
+      </div>
+    </a>
+  </div>
+</section>
+
+<!-- ═══════════════ CTA BANNER ═══════════════ -->
+<section id="cta-banner">
+  <div style="position:relative;z-index:1">
+    <h2 class="cta-h2 reveal">Visit Us in<br>South <em>Kensington</em></h2>
+  </div>
+  <div style="position:relative;z-index:1">
+    <p class="cta-body reveal">33 Thurloe Street, South Kensington, London SW7 2LQ</p>
+    <div class="cta-contacts reveal">
+      <div class="cta-contact-item">
+        <span>Phone</span><div class="cta-contact-divider"></div><strong>020 7584 7000</strong>
+      </div>
+      <div class="cta-contact-item">
+        <span>WhatsApp</span><div class="cta-contact-divider"></div><strong>+44 7507 389 606</strong>
+      </div>
+    </div>
+    <div class="cta-hours reveal" style="margin-bottom:2rem">
+      <div class="cta-hours-row"><span>Mon – Fri</span><span>10:00 – 20:00</span></div>
+      <div class="cta-hours-row"><span>Saturday</span><span>10:00 – 19:00</span></div>
+      <div class="cta-hours-row"><span>Sunday</span><span>10:00 – 19:00</span></div>
+    </div>
+    <div class="flex gap-3 flex-wrap reveal">
+      <a href="#" class="n-cta">Book Appointment</a>
+      <a href="https://wa.me/447507389606" style="font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;border:1px solid rgba(244,241,236,.15);color:rgba(244,241,236,.5);padding:.6rem 1.4rem;text-decoration:none;transition:border-color .3s,color .3s" onmouseover="this.style.borderColor='#b8965a';this.style.color='#b8965a'" onmouseout="this.style.borderColor='rgba(244,241,236,.15)';this.style.color='rgba(244,241,236,.5)'">WhatsApp Us</a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ FOOTER ═══════════════ -->
+<footer>
+  <div class="ft-top">
+    <div>
+      <div class="ft-brand">Santi London</div>
+      <p class="ft-tagline">Clinical skin, wellness & medical aesthetics in South Kensington — focused on long-term performance since 2009.</p>
+      <p style="font-size:.7rem;color:rgba(255,255,255,.15);line-height:1.8;font-weight:300">33 Thurloe Street<br>South Kensington, London SW7 2LQ</p>
+    </div>
+    <div>
+      <div class="ft-col-label">Aesthetics</div>
+      <a href="#" class="ft-link">Anti-wrinkle (Botox)</a>
+      <a href="#" class="ft-link">Dermal Fillers</a>
+      <a href="#" class="ft-link">Skin Boosters</a>
+      <a href="#" class="ft-link">CO₂ Laser</a>
+      <a href="#" class="ft-link">PRP Therapy</a>
+      <a href="#" class="ft-link">Skin Lab</a>
+    </div>
+    <div>
+      <div class="ft-col-label">Wellness</div>
+      <a href="#" class="ft-link">Bespoke Facials</a>
+      <a href="#" class="ft-link">Massage Therapy</a>
+      <a href="#" class="ft-link">Physiotherapy</a>
+      <a href="#" class="ft-link">Pregnancy</a>
+      <a href="#" class="ft-link">Hair Clinic</a>
+      <a href="#" class="ft-link">Holistic</a>
+    </div>
+    <div>
+      <div class="ft-col-label">Info</div>
+      <a href="#" class="ft-link">Price List</a>
+      <a href="#" class="ft-link">About Us</a>
+      <a href="#" class="ft-link">Meet the Team</a>
+      <a href="#" class="ft-link">Journal</a>
+      <a href="#" class="ft-link">Gift Vouchers</a>
+      <a href="#" class="ft-link">Contact</a>
+    </div>
+  </div>
+  <div class="ft-bottom">
+    <span class="ft-copy">© 2025 Santi London · All rights reserved</span>
+    <div class="ft-legal">
+      <a href="#">Privacy Policy</a>
+      <a href="#">Terms</a>
+    </div>
+  </div>
+</footer>
+
+<div id="badge">✦ Design Proposal</div>
+
+<!-- ═══════════════ SCRIPTS ═══════════════ -->
+<script>
+gsap.registerPlugin(ScrollTrigger);
+
+/* ── cursor ── */
+const cur  = document.getElementById('cur');
+const ring = document.getElementById('cur-ring');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{ mx=e.clientX; my=e.clientY; gsap.to(cur,{x:mx,y:my,duration:.12,ease:'power2.out'}); });
+(function animRing(){ rx+=(mx-rx)*.09; ry+=(my-ry)*.09; gsap.set(ring,{x:rx,y:ry}); requestAnimationFrame(animRing); })();
+document.querySelectorAll('a,button,.bento-card,.bento-img,.jcard,.pillar-item').forEach(el=>{
+  el.addEventListener('mouseenter',()=>gsap.to(cur,{width:16,height:16,duration:.25}));
+  el.addEventListener('mouseleave',()=>gsap.to(cur,{width:8,height:8,duration:.25}));
+});
+
+/* ── loader ── */
+const ltl = gsap.timeline({
+  onComplete:()=>{
+    gsap.to('#loader',{opacity:0,duration:.7,ease:'power2.inOut',onComplete:()=>{
+      document.getElementById('loader').style.display='none';
+      startPage();
+    }});
+  }
+});
+ltl.to('#l-word span',{y:'0%',duration:.9,ease:'expo.out'})
+   .to('#l-bar',{width:200,duration:1.1,ease:'power3.inOut'},'-=.4')
+   .to('#l-word span',{y:'-105%',duration:.6,ease:'power2.in'},'.8')
+   .to('#l-bar',{opacity:0,duration:.3},'-=.3');
+
+/* ── hero entrance ── */
+function startPage(){
+  gsap.registerPlugin(ScrollTrigger);
+  initNav();
+
+  // lines
+  gsap.to('.h-line-inner',{
+    y:'0%', duration:1.1, ease:'expo.out',
+    stagger:.12, delay:.1
+  });
+  gsap.to('.h-eyebrow',{opacity:1,y:0,duration:.8,ease:'power3.out',delay:.5});
+  gsap.to('.h-body',{opacity:1,y:0,duration:.8,ease:'power3.out',delay:.7});
+  gsap.to('.h-actions',{opacity:1,y:0,duration:.8,ease:'power3.out',delay:.9});
+  gsap.to('.h-tags',{opacity:1,y:0,duration:.8,ease:'power3.out',delay:1.05});
+
+  // hero right image column slides in
+  gsap.fromTo('#hero-right',{opacity:0,x:40},{opacity:1,x:0,duration:1.2,ease:'expo.out',delay:.3});
+
+  // hero number
+  gsap.fromTo('#hero-num',{opacity:0,x:60},{opacity:1,x:0,duration:1.6,ease:'expo.out',delay:.6});
+
+  initScrollAnimations();
+}
+
+function initNav(){
+  ScrollTrigger.create({
+    start:'top -60',
+    onUpdate:s=>document.getElementById('nav').classList.toggle('stuck',s.scroll()>60)
+  });
+}
+
+function initScrollAnimations(){
+  /* generic reveal */
+  gsap.utils.toArray('.reveal').forEach((el,i)=>{
+    gsap.fromTo(el,
+      {opacity:0,y:38},
+      {opacity:1,y:0,duration:.85,ease:'power3.out',
+        scrollTrigger:{trigger:el,start:'top 88%',toggleActions:'play none none none'}}
+    );
+  });
+
+  /* bento cards stagger */
+  gsap.utils.toArray('.bento-card, .bento-img, .bento-feature').forEach((el,i)=>{
+    gsap.fromTo(el,
+      {opacity:0,y:32,scale:.97},
+      {opacity:1,y:0,scale:1,duration:.9,ease:'power3.out',
+        delay:(i%4)*.09,
+        scrollTrigger:{trigger:el,start:'top 90%',toggleActions:'play none none none'}}
+    );
+  });
+
+  /* pillar slide-in from left */
+  gsap.utils.toArray('.pillar-item').forEach((el,i)=>{
+    gsap.fromTo(el,
+      {opacity:0,x:-28},
+      {opacity:1,x:0,duration:.8,ease:'power3.out',
+        delay:i*.1,
+        scrollTrigger:{trigger:el,start:'top 88%',toggleActions:'play none none none'}}
+    );
+  });
+
+  /* journal cards stagger */
+  const jcards = gsap.utils.toArray('.jcard');
+  if(jcards.length){
+    ScrollTrigger.create({
+      trigger:'#journal',
+      start:'top 75%',
+      once:true,
+      onEnter:()=>gsap.fromTo(jcards,{opacity:0,y:40},{opacity:1,y:0,duration:.85,ease:'power3.out',stagger:.12})
+    });
+  }
+
+  /* metric bars */
+  document.querySelectorAll('.mw-bar-fill').forEach(bar=>{
+    ScrollTrigger.create({
+      trigger:bar, start:'top 85%', once:true,
+      onEnter:()=>gsap.to(bar,{width:bar.dataset.w+'%',duration:1.5,ease:'power2.out',delay:.2})
+    });
+  });
+
+  /* subtle bg parallax on hero (slight depth without blurring images) */
+  gsap.to('#hero-num',{
+    y:120, ease:'none',
+    scrollTrigger:{trigger:'#hero',start:'top top',end:'bottom top',scrub:1.5}
+  });
+}
+</script>
+</body>
+</html>
