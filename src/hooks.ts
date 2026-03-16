@@ -1,8 +1,6 @@
 import type { Handle } from '@sveltejs/kit';
 import { readFileSync, existsSync } from 'fs';
-// import { join } from 'path';
-import { join } from 'path'; // Use Node.js built-in 'path' module for server-side path operations
-
+import { join } from 'path';
 export const handle: Handle = async ({ event, resolve }) => {
 	const host = event.request.headers.get('host') ?? '';
 	const hostname = host.split(':')[0].toLowerCase();
